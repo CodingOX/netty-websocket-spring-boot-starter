@@ -4,15 +4,15 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>org.yeauty</groupId>
+    <groupId>io.github.codingox</groupId>
     <artifactId>netty-websocket-spring-boot-starter</artifactId>
-    <version>0.13.0</version>
+    <version>0.14.0</version>
 
     <name>netty-websocket-spring-boot-starter</name>
     <description>
         netty-websocket-spring-boot-starter is a Java WebSocket Framework based on Netty
     </description>
-    <url>http://www.yeauty.org/</url>
+    <url>https://github.com/CodingOX/netty-websocket-spring-boot-starter</url>
 
     <licenses>
         <license>
@@ -23,21 +23,23 @@
 
     <developers>
         <developer>
-            <name>Yeauty</name>
+            <name>CodingOX</name>
             <email>YeautyYE@gmail.com</email>
         </developer>
     </developers>
 
     <scm>
-        <connection>scm:git:git://github.com/YeautyYE/netty-websocket-spring-boot-starter.git</connection>
-        <developerConnection>scm:git:ssh://github.com/YeautyYE/netty-websocket-spring-boot-starter.git
+        <connection>scm:git:https://github.com/CodingOX/netty-websocket-spring-boot-starter.git</connection>
+        <developerConnection>scm:git:ssh://git@github.com/CodingOX/netty-websocket-spring-boot-starter.git
         </developerConnection>
-        <url>https://github.com/YeautyYE/netty-websocket-spring-boot-starter</url>
+        <url>https://github.com/CodingOX/netty-websocket-spring-boot-starter</url>
     </scm>
 
     <properties>
-        <netty.version>4.1.118.Final</netty.version>
+        <netty.version>4.2.7.Final</netty.version>
         <spring-boot.version>3.3.5</spring-boot.version>
+        <central-publishing-maven-plugin.version>0.9.0</central-publishing-maven-plugin.version>
+        <maven-gpg-plugin.version>1.6</maven-gpg-plugin.version>
     </properties>
 
     <dependencyManagement>
@@ -86,7 +88,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-source-plugin</artifactId>
-                        <version>3.0.1</version>
+                        <version>3.3.1</version>
                         <executions>
                             <execution>
                                 <goals>
@@ -100,7 +102,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
-                        <version>3.0.1</version>
+                        <version>3.12.0</version>
                         <executions>
                             <execution>
                                 <goals>
@@ -120,7 +122,7 @@
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
-                        <version>1.6</version>
+                        <version>${maven-gpg-plugin.version}</version>
                         <executions>
                             <execution>
                                 <phase>verify</phase>
@@ -129,32 +131,29 @@
                                 </goals>
                             </execution>
                         </executions>
+                        <configuration>
+                            <!-- 避免在无 TTY 环境下交互式输入密码，使用 loopback 模式 -->
+                            <gpgArguments>
+                                <arg>--pinentry-mode</arg>
+                                <arg>loopback</arg>
+                            </gpgArguments>
+                        </configuration>
                     </plugin>
-                    <!-- Nexus Staging Plugin, auto deploy close and release -->
+                    <!-- Central Publishing Maven Plugin（通过 Central Portal 发布到 Maven Central） -->
                     <plugin>
-                        <groupId>org.sonatype.plugins</groupId>
-                        <artifactId>nexus-staging-maven-plugin</artifactId>
-                        <version>1.6.13</version>
+                        <groupId>org.sonatype.central</groupId>
+                        <artifactId>central-publishing-maven-plugin</artifactId>
+                        <version>${central-publishing-maven-plugin.version}</version>
                         <extensions>true</extensions>
                         <configuration>
-                            <serverId>ossrh</serverId>
-                            <nexusUrl>https://oss.sonatype.org/</nexusUrl>
-                            <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                            <!-- 对应 settings.xml 中 <server><id>central</id> -->
+                            <publishingServerId>central</publishingServerId>
+                            <!-- 自动从“已上传”变为“已发布”，等于老方案里的 autoReleaseAfterClose -->
+                            <autoPublish>true</autoPublish>
                         </configuration>
                     </plugin>
                 </plugins>
             </build>
-
-            <distributionManagement>
-                <snapshotRepository>
-                    <id>ossrh</id>
-                    <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-                </snapshotRepository>
-                <repository>
-                    <id>ossrh</id>
-                    <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-                </repository>
-            </distributionManagement>
         </profile>
     </profiles>
 
@@ -163,7 +162,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
+                <version>3.14.1</version>
                 <configuration>
                     <source>17</source>
                     <target>17</target>
