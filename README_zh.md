@@ -8,6 +8,7 @@ netty-websocket-spring-boot-starter [![License](http://img.shields.io/:license-a
 
 ### 要求
 - jdk版本为17
+- 推荐使用 Spring Boot 3.x，并通过官方 BOM (`spring-boot-dependencies`) 统一管理 Spring Boot 相关依赖版本
 
 
 ### 快速开始
@@ -91,6 +92,11 @@ public class MyWebSocket {
 ```
 
 - 打开WebSocket客户端，连接到`ws://127.0.0.1:80/ws/xxx`
+
+在 Spring Boot 3 项目中，一般情况下只需引入本 starter 依赖即可自动装配：
+
+- 自动装配类通过 `AutoConfiguration.imports` 注册，无需手动配置 `ServerEndpointExporter`
+- 通常也无需再在启动类上额外加 `@EnableWebSocket`，除非你在非 Spring Boot 环境下使用
 
 
 ### 注解

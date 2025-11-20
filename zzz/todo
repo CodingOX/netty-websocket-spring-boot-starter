@@ -1,6 +1,16 @@
 Spring Boot 3 适配改进建议
 ========================
 
+进度记录（2025-11-20）
+--------------------
+
+- 已新增 `NettyWebSocketAutoConfiguration`，并通过 `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`
+  接入 Spring Boot 3 推荐的自动装配注册机制，同时保留 `spring.factories` 以兼容旧工程。
+- 已新增 `NettyWebSocketAutoConfigurationTests`，通过 `ApplicationContextRunner` 验证可以自动提供 `ServerEndpointExporter`。
+- 已在 `pom.xml` 中引入 `spring-boot-dependencies` BOM，并移除 `spring-boot-autoconfigure` / `spring-boot-starter-test`
+  依赖上的显式版本号，版本交给 BOM 管理。
+- 已在 `README.md` / `README_zh.md` 中补充 Spring Boot 3 使用说明和版本管理建议。
+
 1. AutoConfiguration 注册方式现代化
    - 现状：通过 `META-INF/spring.factories` 中的
      `org.springframework.boot.autoconfigure.EnableAutoConfiguration=org.yeauty.autoconfigure.NettyWebSocketAutoConfigure`
@@ -35,4 +45,3 @@ Spring Boot 3 适配改进建议
    - 当前实现对 Spring Boot 3 已经“可以正常工作”，不存在明显的运行时兼容性问题。
    - 从“官方推荐实践 / 第三方 Starter 规范 / 长期维护（尤其是未来 Spring Boot 4）”角度，
      建议优先推进：AutoConfiguration 注册方式迁移、新的自动配置类结构调整，以及 POM 版本管理方式优化。
-

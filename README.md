@@ -8,6 +8,7 @@ netty-websocket-spring-boot-starter will help you develop WebSocket server by us
 
 ### Requirement
 - jdk version 17
+- Spring Boot 3.x is recommended, and it is suggested to manage Spring Boot dependencies via the official BOM (`spring-boot-dependencies`)
 
 
 ### Quick Start
@@ -97,6 +98,11 @@ public class MyWebSocket {
 ```
 
 - use Websocket client to connect `ws://127.0.0.1:80/ws/xxx` 
+
+In a Spring Boot 3 application, you usually only need to add this starter dependency to enable auto-configuration:
+
+- auto-configuration is registered via `AutoConfiguration.imports`, so you do not need to declare `ServerEndpointExporter` manually
+- in most cases you also do not need to add `@EnableWebSocket` on your main application class, unless you are in a non-Spring-Boot environment
 
 
 ### Annotation
