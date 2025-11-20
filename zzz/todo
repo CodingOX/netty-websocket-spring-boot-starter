@@ -1,0 +1,38 @@
+Spring Boot 3 适配改进建议
+========================
+
+1. AutoConfiguration 注册方式现代化
+   - 现状：通过 `META-INF/spring.factories` 中的
+     `org.springframework.boot.autoconfigure.EnableAutoConfiguration=org.yeauty.autoconfigure.NettyWebSocketAutoConfigure`
+     注册自动装配，`NettyWebSocketAutoConfigure` 本身只是加了 `@EnableWebSocket`。
+   - 问题：这种 `spring.factories + EnableAutoConfiguration` 的方式在 Spring Boot 3 中仍可用，
+     但已经被官方视为旧方式，迁移到 Boot 3 的官方指南会建议使用新的 AutoConfiguration 机制。
+   - 建议：采用 `@AutoConfiguration` 注解 + `META-INF/spring/org.springframework.boot.autoconfigure.AutoConfiguration.imports`
+     进行注册，例如创建 `NettyWebSocketAutoConfiguration` 类，直接在其中定义相关 Bean。
+
+2. 自动配置类职责更清晰
+   - 现状：真正的配置逻辑在 `NettyWebSocketSelector` 中（`@Configuration` + `@ConditionalOnMissingBean` + `@Bean`），
+     `NettyWebSocketAutoConfigure` 只是一个桥接 `@EnableWebSocket` 的空类。
+   - 问题：这种设计更像“把原有的 `@EnableWebSocket` 强行自动开启”，而不是典型的 Spring Boot 3 Starter 风格，
+     AutoConfiguration 本身没有清晰承担“自动装配入口”的职责。
+   - 建议：让自动配置类本身（例如 `NettyWebSocketAutoConfiguration`）直接负责定义 `ServerEndpointExporter` 等 Bean，
+     对于非 Spring Boot 场景再保留 `@EnableWebSocket` 作为显式启用入口，两条路径相对独立更清晰。
+
+3. POM 中 Spring Boot 依赖的版本管理方式优化
+   - 现状：在 `pom.xml` 中为 `spring-boot-autoconfigure` 显式指定了 `${spring-boot.version}`（例如 3.3.5），
+     同时又将其标记为 `<optional>true</optional>`。
+   - 问题：第三方 Starter 通常建议“不要在 Starter 内强推 Spring Boot 版本”，
+     而是由使用方通过 `spring-boot-dependencies` BOM 统一管理版本。
+   - 建议：在 Starter 中保留对 `spring-boot-autoconfigure` 的依赖，但不写 `<version>`，
+     让使用方通过 Spring Boot 官方 BOM 来对齐版本；如需提供推荐版本，可通过单独的 BOM 模块或文档说明完成。
+
+4. 其他 Spring Boot 3 适配情况说明
+   - JDK 要求与 Spring Boot 3 基线一致（JDK 17），`maven-compiler-plugin` 已配置为 `source/target = 17`，这一点是 OK 的。
+   - 项目主要依赖 Spring 核心、Netty 以及自定义注解，没有使用 `javax.*` / `jakarta.*` 迁移敏感接口，整体兼容性较好。
+   - 使用 `@ConditionalOnMissingBean(ServerEndpointExporter.class)` 保护用户自定义 Bean，这一点符合 Starter 设计规范。
+
+5. 整体评估
+   - 当前实现对 Spring Boot 3 已经“可以正常工作”，不存在明显的运行时兼容性问题。
+   - 从“官方推荐实践 / 第三方 Starter 规范 / 长期维护（尤其是未来 Spring Boot 4）”角度，
+     建议优先推进：AutoConfiguration 注册方式迁移、新的自动配置类结构调整，以及 POM 版本管理方式优化。
+

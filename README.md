@@ -43,6 +43,12 @@ public class MyWebSocket {
         System.out.println(req);
     }
 
+    @OnClose    @OnOpen
+    public void onOpen(Session session, HttpHeaders headers, @RequestParam String req, @RequestParam MultiValueMap reqMap, @PathVariable String arg, @PathVariable Map pathMap){
+        System.out.println("new connection");
+        System.out.println(req);
+    }
+
     @OnClose
     public void onClose(Session session) throws IOException {
        System.out.println("one connection closed"); 
